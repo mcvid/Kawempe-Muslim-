@@ -1,0 +1,43 @@
+/* AdminMarksEntry.css */
+.filters-bar {
+    display: flex;
+    gap: 1rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    min-width: 200px;
+    font-size: 0.95rem;
+    color: #334155;
+    background-color: #f8fafc;
+}
+
+.mark-input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.mark-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background-color: #f0fdf4;
+}
+
+/* Hover row effect for better focus */
+.admin-table tbody tr:hover {
+    background-color: #f8fafc;
+}

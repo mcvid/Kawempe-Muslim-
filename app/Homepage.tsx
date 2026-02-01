@@ -1,17 +1,25 @@
-import CoreValues from "./components/CoreValues";
-import EventsSection from "./components/EventsSection";
-import Footer from "./components/Footer";
-import HeadMsg from "./components/HeadMsg";
-import Hero from "./components/Hero";
-import LatestNews from "./components/LatestNews";
-import Leader from "./components/Leader";
-import Mission from "./components/Mission";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+import { Hero } from "./components/home";
 import NavBar from "./components/NavBar";
-import QuickActions from "./QuickActions";
-import SectionAbout from "./components/SectionAbout";
-import Vision from "./components/Vision";
-import WempianSection from "./components/WempianSection";
 import FadeInSection from "./Fade";
+
+// Dynamic Imports for performance
+const SectionAbout = dynamic(() => import("./components/home").then(mod => mod.SectionAbout), { ssr: true });
+const HeadMsg = dynamic(() => import("./components/home").then(mod => mod.HeadMsg), { ssr: true });
+const Mission = dynamic(() => import("./components/home").then(mod => mod.Mission), { ssr: true });
+const Vision = dynamic(() => import("./components/home").then(mod => mod.Vision), { ssr: true });
+const CoreValues = dynamic(() => import("./components/home").then(mod => mod.CoreValues), { ssr: true });
+const Leader = dynamic(() => import("./components/home").then(mod => mod.Leader), { ssr: true });
+const QuickActions = dynamic(() => import("./components/home").then(mod => mod.QuickActions), { ssr: true });
+const EventsSection = dynamic(() => import("./components/home").then(mod => mod.EventsSection), { ssr: true });
+const WempianSection = dynamic(() => import("./components/home").then(mod => mod.WempianSection), { ssr: true });
+const VideoSection = dynamic(() => import("./components/home").then(mod => mod.VideoSection), { ssr: true });
+const LatestNews = dynamic(() => import("./components/home").then(mod => mod.LatestNews), { ssr: true });
+const Footer = dynamic(() => import("./components/Footer"), { ssr: true });
+
+const SectionLoader = () => <div className="min-h-[200px] flex items-center justify-center bg-slate-50/10 animate-pulse " />;
+
 
 const Homepage = () => {
   return (
@@ -20,49 +28,63 @@ const Homepage = () => {
         <Hero />
       </FadeInSection>
 
-      <FadeInSection delay={100}>
-        <SectionAbout />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={100}>
+          <SectionAbout />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={200}>
-        <HeadMsg />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={200}>
+          <HeadMsg />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={300}>
+      <Suspense fallback={<SectionLoader />}>
         <Mission />
-      </FadeInSection>
-
-      <FadeInSection delay={400}>
         <Vision />
-      </FadeInSection>
-
-      <FadeInSection delay={500}>
         <CoreValues />
-      </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={600}>
+      <Suspense fallback={<SectionLoader />}>
         <Leader />
-      </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={700}>
-        <QuickActions />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={700}>
+          <QuickActions />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={800}>
-        <EventsSection />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={800}>
+          <EventsSection />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={900}>
-        <WempianSection />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={900}>
+          <WempianSection />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={1000}>
-        <LatestNews />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={950}>
+          <VideoSection />
+        </FadeInSection>
+      </Suspense>
 
-      <FadeInSection delay={1100}>
-        <Footer />
-      </FadeInSection>
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={1000}>
+          <LatestNews />
+        </FadeInSection>
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <FadeInSection delay={1100}>
+          <Footer />
+        </FadeInSection>
+      </Suspense>
     </div>
   );
 };

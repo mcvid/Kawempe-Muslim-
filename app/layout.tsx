@@ -1,21 +1,47 @@
 import type { Metadata } from "next";
-import {
-  Bebas_Neue,
-  Inter,
-  Lexend,
-  Montserrat,
-  Outfit,
-  Poppins,
-  TASA_Explorer,
-  Zalando_Sans_Expanded,
-} from "next/font/google";
+import { Poppins, Crimson_Pro, Montserrat, Outfit, Inter, Barlow_Condensed } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import FadeInSection from "./Fade";
-import NavBar from "./components/NavBar";
+import NavBarWrapper from "./components/NavBarWrapper";
+import ScrollToTop from "./components/ScrollToTop";
+import BackToTop from "./components/BackToTop";
+import VisitTracker from "./components/VisitTracker";
+import { CartProvider } from "./lib/CartContext";
 
-const montserratFont = Poppins({
-  weight: ["500", "700"],
+const poppins = Poppins({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-poppins",
+});
+
+const crimsonPro = Crimson_Pro({
+  weight: ["300", "400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-crimson",
+});
+
+const montserrat = Montserrat({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+});
+
+const outfit = Outfit({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  variable: "--font-outfit",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-barlow",
 });
 
 export const metadata: Metadata = {
@@ -30,16 +56,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${montserratFont.className}`}>
-        <NavBar />
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${poppins.variable} ${crimsonPro.variable} ${montserrat.variable} ${outfit.variable} ${inter.variable} ${barlowCondensed.variable} font - sans antialiased`}>
+        <Suspense fallback={null}>
+          <VisitTracker />
+        </Suspense>
+        <ScrollToTop />
+        <NavBarWrapper />
         <main>
-          <div className="relative bg-[url(/bg2.jpg)] bg-cover bg-center bg-fixed">
-            <FadeInSection delay={0}>
-              {children} {/* or first Hero section */}
-            </FadeInSection>
+          <div className="relative">
+            <Suspense fallback={<div className="min-h-screen animate-pulse bg-slate-50/50" />}>
+              <CartProvider>
+                <FadeInSection delay={0}>
+                  {children}
+                </FadeInSection>
+              </CartProvider>
+            </Suspense>
           </div>
         </main>
+        <BackToTop />
       </body>
     </html>
   );

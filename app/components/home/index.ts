@@ -1,0 +1,12 @@
+export { default as CoreValues } from "./CoreValues";
+export { default as EventsSection } from "./EventsSection";
+export { default as HeadMsg } from "./HeadMsg";
+export { default as Hero } from "./Hero";
+export { default as LatestNews } from "./LatestNews";
+export { default as Leader } from "./Leader";
+export { default as Mission } from "./Mission";
+export { default as QuickActions } from "./QuickActions";
+export { default as SectionAbout } from "./SectionAbout";
+export { default as Vision } from "./Vision";
+export { default as WempianSection } from "./WempianSection";
+export { default as VideoSection } from "./VideoSection";
