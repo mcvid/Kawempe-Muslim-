@@ -1,22 +1,20 @@
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { Hero } from "./components/home";
-import NavBar from "./components/NavBar";
 import FadeInSection from "./Fade";
-
-// Dynamic Imports for performance
-const SectionAbout = dynamic(() => import("./components/home").then(mod => mod.SectionAbout), { ssr: true });
-const HeadMsg = dynamic(() => import("./components/home").then(mod => mod.HeadMsg), { ssr: true });
-const Mission = dynamic(() => import("./components/home").then(mod => mod.Mission), { ssr: true });
-const Vision = dynamic(() => import("./components/home").then(mod => mod.Vision), { ssr: true });
-const CoreValues = dynamic(() => import("./components/home").then(mod => mod.CoreValues), { ssr: true });
-const Leader = dynamic(() => import("./components/home").then(mod => mod.Leader), { ssr: true });
-const QuickActions = dynamic(() => import("./components/home").then(mod => mod.QuickActions), { ssr: true });
-const EventsSection = dynamic(() => import("./components/home").then(mod => mod.EventsSection), { ssr: true });
-const WempianSection = dynamic(() => import("./components/home").then(mod => mod.WempianSection), { ssr: true });
-const VideoSection = dynamic(() => import("./components/home").then(mod => mod.VideoSection), { ssr: true });
-const LatestNews = dynamic(() => import("./components/home").then(mod => mod.LatestNews), { ssr: true });
-const Footer = dynamic(() => import("./components/Footer"), { ssr: true });
+import {
+  Hero,
+  SectionAbout,
+  HeadMsg,
+  Mission,
+  Vision,
+  CoreValues,
+  Leader,
+  QuickActions,
+  EventsSection,
+  WempianSection,
+  VideoSection,
+  LatestNews
+} from "./components/home";
+import Footer from "./components/Footer";
 
 const SectionLoader = () => <div className="min-h-[200px] flex items-center justify-center bg-slate-50/10 animate-pulse " />;
 

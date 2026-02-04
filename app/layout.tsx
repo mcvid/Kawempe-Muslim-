@@ -8,6 +8,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
 import VisitTracker from "./components/VisitTracker";
 import { CartProvider } from "./lib/CartContext";
+import { SiteConfigProvider } from "./lib/SiteConfigContext";
+import AnnouncementDrop from "./components/AnnouncementDrop";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -57,7 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${poppins.variable} ${crimsonPro.variable} ${montserrat.variable} ${outfit.variable} ${inter.variable} ${barlowCondensed.variable} font - sans antialiased`}>
+      <body suppressHydrationWarning className={`${poppins.variable} ${crimsonPro.variable} ${montserrat.variable} ${outfit.variable} ${inter.variable} ${barlowCondensed.variable} font-sans antialiased`}>
         <Suspense fallback={null}>
           <VisitTracker />
         </Suspense>
@@ -66,11 +68,14 @@ export default function RootLayout({
         <main>
           <div className="relative">
             <Suspense fallback={<div className="min-h-screen animate-pulse bg-slate-50/50" />}>
-              <CartProvider>
-                <FadeInSection delay={0}>
-                  {children}
-                </FadeInSection>
-              </CartProvider>
+              <SiteConfigProvider>
+                <CartProvider>
+                  <AnnouncementDrop />
+                  <FadeInSection delay={0}>
+                    {children}
+                  </FadeInSection>
+                </CartProvider>
+              </SiteConfigProvider>
             </Suspense>
           </div>
         </main>

@@ -127,18 +127,20 @@ const VirtualTour = () => {
 
             {/* Sidebar - Matches your .tour-sidebar exactly */}
             <div
-                className={`fixed md:relative top-0 left-0 h-full bg-white border-r border-slate-200 flex flex-col z-[60] transition-all duration-300 ease-in-out ${sidebarOpen ? "translate-x-0 w-[300px] opacity-100" : "-translate-x-full w-0 md:w-0 opacity-0 pointer-events-none"
+                className={`fixed md:relative top-0 left-0 h-full max-h-screen bg-white border-r border-slate-200 flex flex-col z-[60] transition-all duration-300 ease-in-out ${sidebarOpen ? "translate-x-0 w-full md:w-[300px] opacity-100" : "-translate-x-full w-0 md:w-0 opacity-0 pointer-events-none"
                     }`}
-                style={{ width: sidebarOpen ? "300px" : "0px" }}
+                style={{ width: sidebarOpen ? (typeof window !== 'undefined' && window.innerWidth < 768 ? "100%" : "300px") : "0px" }}
             >
                 <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-white min-w-[300px]">
                     <h5 className={`${orbitron.className} text-base md:text-[27px] font-bold text-slate-900 tracking-tight whitespace-nowrap`}>Campus Tour</h5>
                     <button
-                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all"
+                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all active:scale-95 touch-manipulation"
                         onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             setSidebarOpen(false);
                         }}
+                        aria-label="Close sidebar"
                     >
                         <X size={22} strokeWidth={2.5} />
                     </button>

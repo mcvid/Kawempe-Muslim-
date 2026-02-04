@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
+import { schoolIdToEmail } from "@/utils/auth/schoolAuth";
 
 export default function StudentLoginPage() {
     const [email, setEmail] = useState("");
@@ -20,7 +21,13 @@ export default function StudentLoginPage() {
         setLoading(true);
         setError(null);
 
-        // Temporary hardcoded credentials
+        // Check if input is likely a School ID (no '@')
+        let loginEmail = email.trim();
+        if (!loginEmail.includes('@')) {
+            loginEmail = schoolIdToEmail(loginEmail);
+        }
+
+        // Temporary hardcoded credentials (keep for testing)
         if (email === "student@email.com" && password === "1234567") {
             setTimeout(() => {
                 router.push("/student/dashboard");
@@ -31,7 +38,7 @@ export default function StudentLoginPage() {
 
         try {
             const { error } = await supabase.auth.signInWithPassword({
-                email,
+                email: loginEmail,
                 password,
             });
 
@@ -92,10 +99,10 @@ export default function StudentLoginPage() {
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
-                                    type="email"
+                                    type="text"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="student@kmss.ac.ug"
+                                    placeholder="School ID (e.g. STU-001) or Email"
                                     required
                                     className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                 />
@@ -142,6 +149,18 @@ export default function StudentLoginPage() {
                                 "Sign In"
                             )}
                         </button>
+
+                        <div className="text-center mt-6">
+                            <p className="text-slate-500 text-sm">
+                                New here?{" "}
+                                <Link
+                                    href="/admissions/apply"
+                                    className="text-blue-600 font-semibold hover:underline"
+                                >
+                                    Apply for Admission
+                                </Link>
+                            </p>
+                        </div>
                     </form>
 
                     {/* Footer */}

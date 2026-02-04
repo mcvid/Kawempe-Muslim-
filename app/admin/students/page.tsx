@@ -100,7 +100,7 @@ export default function StudentsManager() {
                 </div>
             </div>
 
-            {/* Stats Cards (Minimalist Sports Style) */}
+            {/* Stats Cards (Minimalist Flat Style) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: "Total Registered", value: students.length, color: "text-[#1E3A8A]", bg: "bg-blue-50" },
@@ -108,15 +108,15 @@ export default function StudentsManager() {
                     { label: "Female Students", value: students.filter(s => s.gender === 'Female').length, color: "text-[#C8102E]", bg: "bg-red-50" },
                     { label: "Active Classes", value: classes.length, color: "text-[#FFD700]", bg: "bg-yellow-50" },
                 ].map((stat, i) => (
-                    <div key={i} className={`p-6 rounded-[2rem] border border-slate-100 bg-white shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow`}>
+                    <div key={i} className={`p-6 rounded-2xl border border-slate-100 bg-white flex flex-col justify-between h-28`}>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[2px]">{stat.label}</span>
-                        <span className={`text-4xl font-black font-[var(--font-barlow)] ${stat.color}`}>{loading ? "..." : stat.value}</span>
+                        <span className={`text-3xl font-black font-[var(--font-barlow)] ${stat.color}`}>{loading ? "..." : stat.value}</span>
                     </div>
                 ))}
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white p-2 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3">
+            <div className="bg-white p-2 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
@@ -142,7 +142,7 @@ export default function StudentsManager() {
             </div>
 
             {/* Students Table */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>

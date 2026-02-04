@@ -3,6 +3,8 @@
 :root {
   --background: #ECF7F8;
   --foreground: #171717;
+  --primary-green: #16a34a;
+  --header-height: 80px;
 }
 
 @theme inline {

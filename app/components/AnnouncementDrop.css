@@ -1,0 +1,205 @@
+.announcement-rope-container {
+    position: fixed;
+    /* Changed from absolute to fixed to drop from viewport top */
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    /* Changed from calc(var(--header-height) - 10px) to ensure it drops from very top or adjust accordingly */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* Rope Styling */
+.rope-svg-container {
+    margin-top: -120px;
+    /* Start hidden above */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: margin-top 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rope-knot {
+    width: 10px;
+    height: 10px;
+    background: #8B5E3C;
+    border-radius: 50%;
+    margin-top: -5px;
+}
+
+/* Card Styling */
+.announcement-card {
+    background: white;
+    min-width: 320px;
+    max-width: 450px;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    overflow: hidden;
+    border-top: 4px solid var(--primary-green);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.a-card-content {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    gap: 1.25rem;
+    position: relative;
+}
+
+.a-icon-wrap {
+    width: 45px;
+    height: 45px;
+    background: #f0fdf4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.a-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--primary-green);
+}
+
+.a-text-box h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+.a-text-box p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.a-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    transition: all 0.2s;
+}
+
+.a-close-btn:hover {
+    background: #f1f5f9;
+    color: #e11d48;
+}
+
+/* Types Styling */
+.announcement-card.type-celebration {
+    border-top-color: #fbbf24;
+}
+
+.announcement-card.type-celebration .a-icon-wrap {
+    background: #fffbeb;
+}
+
+.announcement-card.type-celebration .a-icon {
+    color: #fbbf24;
+}
+
+.announcement-card.type-matchday {
+    border-top-color: var(--primary-green);
+}
+
+.announcement-card.type-alert {
+    border-top-color: #ef4444;
+}
+
+.announcement-card.type-alert .a-icon-wrap {
+    background: #fef2f2;
+}
+
+.announcement-card.type-alert .a-icon {
+    color: #ef4444;
+}
+
+/* Animation Classes */
+.static-show .rope-svg-container {
+    margin-top: 0;
+}
+
+.static-show .announcement-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animate-drop .rope-svg-container {
+    animation: dropRope 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-drop .announcement-card {
+    animation: dropCard 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+}
+
+.exit-lift {
+    pointer-events: none;
+}
+
+.exit-lift .rope-svg-container {
+    margin-top: -200px;
+    transition: margin-top 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+
+.exit-lift .announcement-card {
+    opacity: 0;
+    transform: translateY(-50px);
+    transition: all 0.6s ease;
+}
+
+@keyframes dropRope {
+    0% {
+        margin-top: -120px;
+    }
+
+    70% {
+        margin-top: 10px;
+    }
+
+    85% {
+        margin-top: -5px;
+    }
+
+    100% {
+        margin-top: 0;
+    }
+}
+
+@keyframes dropCard {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .announcement-card {
+        min-width: 90vw;
+        max-width: 90vw;
+    }
+}

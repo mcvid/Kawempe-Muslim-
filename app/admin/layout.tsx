@@ -13,6 +13,7 @@ import {
     Image as ImageIcon,
     MessageSquare,
     LogOut,
+    Layers,
     Menu,
     X,
     DollarSign,
@@ -24,6 +25,7 @@ import {
     Settings,
     Navigation,
     ShoppingBag,
+    Bell,
 } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
 
@@ -47,6 +49,7 @@ const navSections = [
             { name: "Gallery", href: "/admin/gallery", icon: Camera },
             { name: "Virtual Tour", href: "/admin/tour", icon: Navigation },
             { name: "Hero Slides", href: "/admin/hero", icon: ImageIcon },
+            { name: "Announcements", href: "/admin/announcements", icon: Bell },
             { name: "School Shop", href: "/admin/shop", icon: ShoppingBag },
             { name: "Administration", href: "/admin/administration", icon: Users },
         ],
@@ -62,6 +65,8 @@ const navSections = [
         title: "Academic Portal",
         items: [
             { name: "Marks Entry", href: "/admin/marks", icon: ClipboardList },
+            { name: "Timetables", href: "/admin/timetables", icon: Calendar },
+            { name: "Departments", href: "/admin/departments", icon: Layers },
             { name: "Subjects & Notes", href: "/admin/resources", icon: GraduationCap },
             { name: "Past Papers", href: "/admin/papers", icon: BookOpen },
         ],
