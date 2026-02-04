@@ -148,6 +148,7 @@ export default function JoinMeetingPage() {
                         onJoin={joinMeeting}
                         isJoining={isJoining}
                         userName={userName}
+                        setUserName={setUserName}
                     />
                 )}
             </AnimatePresence>
@@ -210,7 +211,8 @@ function LobbyScreen({
     onToggleMic,
     onJoin,
     isJoining,
-    userName
+    userName,
+    setUserName
 }: {
     meetingId: string;
     videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -221,6 +223,7 @@ function LobbyScreen({
     onJoin: () => void;
     isJoining: boolean;
     userName: string;
+    setUserName: (name: string) => void;
 }) {
     return (
         <motion.div
