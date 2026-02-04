@@ -202,6 +202,19 @@ function CameraChoiceScreen({
 }
 
 // Lobby/Preview Screen
+interface LobbyScreenProps {
+    meetingId: string;
+    videoRef: React.RefObject<HTMLVideoElement | null>;
+    cameraEnabled: boolean;
+    micEnabled: boolean;
+    onToggleCamera: () => void;
+    onToggleMic: () => void;
+    onJoin: () => void;
+    isJoining: boolean;
+    userName: string;
+    setUserName: (name: string) => void;
+}
+
 function LobbyScreen({
     meetingId,
     videoRef,
@@ -213,18 +226,7 @@ function LobbyScreen({
     isJoining,
     userName,
     setUserName
-}: {
-    meetingId: string;
-    videoRef: React.RefObject<HTMLVideoElement | null>;
-    cameraEnabled: boolean;
-    micEnabled: boolean;
-    onToggleCamera: () => void;
-    onToggleMic: () => void;
-    onJoin: () => void;
-    isJoining: boolean;
-    userName: string;
-    setUserName: (name: string) => void;
-}) {
+}: LobbyScreenProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
