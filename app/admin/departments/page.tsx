@@ -16,7 +16,6 @@ type Department = {
     id: string;
     name: string;
     slug: string;
-    slug: string;
     description?: string;
     image_url?: string;
     sort_order: number;

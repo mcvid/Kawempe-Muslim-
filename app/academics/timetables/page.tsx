@@ -65,41 +65,55 @@ export default function TimetablesPage() {
         setSelectedStream(parsedStream);
 
         // Fetch streams to keep state consistent for "Back" button
-        supabase
-          .from("class_streams")
-          .select("*")
-          .eq("class_id", parsedClass.id)
-          .order("name")
-          .then(({ data }) => setStreams(data || []));
+        const fetchStreams = async () => {
+          const { data } = await supabase
+            .from("class_streams")
+            .select("*")
+            .eq("class_id", parsedClass.id)
+            .order("name");
+          setStreams(data || []);
+        };
+        fetchStreams();
 
         // Fetch Restored Timetable
-        setLoading(true);
-        supabase
-          .from("timetables")
-          .select("id")
-          .eq("stream_id", parsedStream.id)
-          .eq("is_active", true)
-          .single()
-          .then(({ data: timetableData }) => {
+        const fetchTimetable = async () => {
+          setLoading(true);
+          try {
+            const { data: timetableData } = await supabase
+              .from("timetables")
+              .select("id")
+              .eq("stream_id", parsedStream.id)
+              .eq("is_active", true)
+              .single();
+
             if (timetableData) {
-              return supabase
+              const { data } = await supabase
                 .from("timetable_entries")
                 .select(`
-                                    id, day_of_week, start_time, end_time, custom_label, component_label, room,
-                                    subject(name), teacher(name)
-                                `)
+                  id, day_of_week, start_time, end_time, custom_label, component_label, room,
+                  subject(name), teacher(name)
+                `)
                 .eq("timetable_id", timetableData.id)
                 .order("start_time");
-            }
-            return { data: [] };
-          })
-          .then(({ data }) => {
-            // @ts-ignore
-            setTimetable(data || []);
-            setStep(3);
-            setLoading(false);
-          });
 
+              // Transform data to match TimetableEntry type
+              const formattedEntries = (data || []).map((entry: any) => ({
+                ...entry,
+                subject: Array.isArray(entry.subject) ? entry.subject[0] : entry.subject,
+                teacher: Array.isArray(entry.teacher) ? entry.teacher[0] : entry.teacher
+              }));
+
+              setTimetable(formattedEntries);
+              setStep(3);
+            }
+          } catch (err) {
+            console.error("Failed to fetch timetable", err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        fetchTimetable();
       } catch (err) {
         console.error("Failed to restore timetable preference", err);
         localStorage.removeItem("kmss_last_class");
@@ -157,7 +171,14 @@ export default function TimetablesPage() {
         .eq("timetable_id", timetableData.id)
         .order("start_time");
 
-      setTimetable(entries || []);
+      // Transform data to match TimetableEntry type
+      const formattedEntries = (entries || []).map((entry: any) => ({
+        ...entry,
+        subject: Array.isArray(entry.subject) ? entry.subject[0] : entry.subject,
+        teacher: Array.isArray(entry.teacher) ? entry.teacher[0] : entry.teacher
+      }));
+
+      setTimetable(formattedEntries);
       setStep(3);
     } else {
       setTimetable([]);

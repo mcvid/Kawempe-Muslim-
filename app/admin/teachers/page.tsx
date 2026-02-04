@@ -242,7 +242,7 @@ export default function TeachersManager() {
         currentPage * itemsPerPage
     );
 
-    const departments = [...new Set(teachers.map((t) => t.department).filter(Boolean))];
+    const totalDepartmentsCount = availableDepts.length;
 
     return (
         <div className="space-y-6">
@@ -282,7 +282,7 @@ export default function TeachersManager() {
                             <GraduationCap className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900">{departments.length}</p>
+                            <p className="text-2xl font-bold text-slate-900">{totalDepartmentsCount}</p>
                             <p className="text-xs text-slate-500">Departments</p>
                         </div>
                     </div>
@@ -320,9 +320,9 @@ export default function TeachersManager() {
                     className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                 >
                     <option value="">All Departments</option>
-                    {departments.map((d) => (
-                        <option key={d} value={d}>
-                            {d}
+                    {availableDepts.map((d) => (
+                        <option key={d.id} value={d.id}>
+                            {d.name}
                         </option>
                     ))}
                 </select>
