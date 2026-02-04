@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/app/lib/supabase";
-import { Chevronright, Calendar, Clock, MapPin, Users, ArrowLeft } from "lucide-react";
+import { ChevronRight, Calendar, Clock, MapPin, Users, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Poppins, Barlow_Condensed } from "next/font/google";
 import Footer from "@/app/components/Footer";
