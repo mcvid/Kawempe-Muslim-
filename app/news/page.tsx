@@ -7,6 +7,7 @@ import { ChevronRight, Search, MessageSquare, Heart, X, Send } from "lucide-reac
 import { Poppins, Barlow_Condensed } from "next/font/google";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "../components/Footer";
+import MotionLoader from "../components/MotionLoader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -246,11 +247,7 @@ export default function NewsPage() {
 
         {/* Content Area */}
         {loading ? (
-          <div className="space-y-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="w-full md:w-[900px] h-[400px] bg-slate-50 rounded-[40px] animate-pulse mx-auto" />
-            ))}
-          </div>
+          <MotionLoader />
         ) : filteredArticles.length === 0 ? (
           <div className="py-24 text-center">
             <h3 className="text-xl font-bold text-slate-900">No articles found</h3>

@@ -28,6 +28,7 @@ import {
     Bell,
 } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
+import MotionLoader from "../components/MotionLoader";
 
 // Navigation structure organized by importance
 const navSections = [
@@ -139,8 +140,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const isActive = (href: string) => pathname === href;
 
-
-    if (loading) return null; // Or a loading spinner
+    if (loading) return (
+        <div className="h-screen w-full flex items-center justify-center bg-white">
+            <MotionLoader minimal />
+        </div>
+    );
 
 
 

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { getEvents, getUserProfile, generateGoogleCalendarLink, toggleLikeEvent, type KMSSEvent } from './actions';
 import { Search, MapPin, Calendar, Heart, Share2, Ticket, ArrowLeft, BellPlus, LayoutGrid, X, Clock, Camera } from 'lucide-react';
 import Link from 'next/link';
+import MotionLoader from '../components/MotionLoader';
 
 export default function EventsPage() {
   const [loading, setLoading] = useState(true);
@@ -88,28 +89,7 @@ export default function EventsPage() {
   }, [data.featured.length]);
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-green-600 relative">
-        <Link href="/" className="absolute top-8 left-6 flex items-center gap-2 text-white/60 hover:text-white transition-colors group">
-          <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
-          <span className="text-xs font-bold uppercase tracking-widest">Home</span>
-        </Link>
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col items-center gap-6"
-        >
-          <div className="relative w-32 h-32 bg-white rounded-[2.5rem] p-6 flex items-center justify-center border border-white/10">
-            <img src="/logo.png" alt="KMSS Logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="text-center">
-            <h1 className="text-4xl font-black tracking-tight text-white mb-1">KMSS Events</h1>
-            <p className="text-white/70 text-sm tracking-[0.3em] uppercase font-bold animate-pulse">Loading...</p>
-          </div>
-        </motion.div>
-      </div>
-    );
+    return <MotionLoader />;
   }
 
   return (
