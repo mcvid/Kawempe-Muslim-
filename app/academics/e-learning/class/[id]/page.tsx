@@ -1,45 +1,50 @@
 "use client";
 
-import {
-    Mic, MicOff, Video, VideoOff, ScreenShare, Hand, MessageSquare,
-    Settings, LogOut, Users, Info, Send, X,
-    Grid, Maximize, Smile, Paperclip, Bell, Loader2, MoreVertical
-} from "lucide-react";
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image"; // Retained as it's used later
+import Link from "next/link"; // Retained as it's used later
+import {
+    Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare,
+    Users, MoreVertical, MonitorUp, Smile, Send, Info,
+    Share2, Settings, Hand, UserCircle, LogOut, ScreenShare, Loader2,
+    X, Paperclip
+} from "lucide-react";
 import { getDailyManager } from "@/utils/daily/client";
-import { DailyParticipant } from "@daily-co/daily-js";
+import type { DailyParticipant } from "@daily-co/daily-js";
 import { createClient } from "@/utils/supabase/client";
 import { getCurrentProfile } from "@/utils/auth/schoolAuth";
+import SettingsModal from "@/app/components/e-learning/SettingsModal";
+import { getVideoSettings, UserProfile } from "@/app/utils/e-learning/userPreferences";
+
 
 /**
  * Component to render a participant's video/audio
  */
-function DailyVideo({ participant }: { participant: DailyParticipant }) {
+interface DailyVideoProps {
+    participant: DailyParticipant;
+    videoStyle?: string;
+}
+
+function DailyVideo({ participant, videoStyle = "" }: DailyVideoProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const videoTrack = participant?.tracks?.video?.persistentTrack;
     const audioTrack = participant?.tracks?.audio?.persistentTrack;
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        if (videoRef.current && videoTrack) {
-            videoRef.current.srcObject = new MediaStream([videoTrack]);
-        }
-    }, [videoTrack]);
+        if (!participant) return;
 
-    useEffect(() => {
-        if (audioTrack && !participant.local) {
-            const audioEl = document.createElement('audio');
-            audioEl.srcObject = new MediaStream([audioTrack]);
-            audioEl.play().catch(e => console.error('Audio play failed:', e));
-            return () => {
-                audioEl.pause();
-                audioEl.srcObject = null;
-            };
+        if (videoRef.current && participant.videoTrack) {
+            videoRef.current.srcObject = new MediaStream([participant.videoTrack]);
         }
-    }, [audioTrack, participant.local]);
+
+        if (audioRef.current && participant.audioTrack && !participant.local) {
+            audioRef.current.srcObject = new MediaStream([participant.audioTrack]);
+            audioRef.current.play().catch(e => console.error('Audio play failed:', e));
+        }
+    }, [participant]);
 
     if (!participant) return null;
 
@@ -51,6 +56,7 @@ function DailyVideo({ participant }: { participant: DailyParticipant }) {
                     autoPlay
                     muted={participant.local}
                     playsInline
+                    style={{ filter: videoStyle }}
                     className={`w-full h-full object-cover ${participant.local ? 'transform -scale-x-100' : ''}`}
                 />
             ) : (
@@ -74,17 +80,17 @@ export default function ClassroomPage() {
     const searchParams = useSearchParams();
     const meetingId = params.id as string;
 
-    // Auth & Profile state
-    const [profile, setProfile] = useState<any>(null);
-
     // Meeting states
     const [micOn, setMicOn] = useState(searchParams.get('mic') !== 'false');
     const [videoOn, setVideoOn] = useState(searchParams.get('camera') !== 'false');
-    const [showChat, setShowChat] = useState(true);
+    const [showChat, setShowChat] = useState(false);
     const [activeTab, setActiveTab] = useState<"chat" | "participants" | "info">("chat");
     const [message, setMessage] = useState("");
     const [isClient, setIsClient] = useState(false);
     const [roomNotFound, setRoomNotFound] = useState(false);
+    const [connectionError, setConnectionError] = useState<string | null>(null);
+    const [showSettings, setShowSettings] = useState(false);
+    const [videoFilterStyle, setVideoFilterStyle] = useState("");
 
     // Daily.co states
     const [participants, setParticipants] = useState<{ [id: string]: DailyParticipant }>({});
@@ -108,7 +114,20 @@ export default function ClassroomPage() {
         setMessage("");
     };
 
+    // Auth & Profile state
+    const [profile, setProfile] = useState<any>(null);
     const isHost = profile && (profile.role === 'teacher' || profile.role === 'admin');
+
+    // Load video settings and apply filters
+    useEffect(() => {
+        const settings = getVideoSettings();
+        const filters = [
+            `brightness(${100 + settings.brightness}%)`,
+            `contrast(${settings.contrast}%)`,
+            `saturate(${settings.saturation}%)`
+        ];
+        setVideoFilterStyle(filters.join(' '));
+    }, []);
 
     // Auto-scroll chat
     useEffect(() => {
@@ -147,42 +166,57 @@ export default function ClassroomPage() {
         alert('Meeting link copied to clipboard!');
     };
 
-    const muteAllParticipants = () => {
-        if (!callObject || !isHost) return;
-        callObject.sendAppMessage({ type: 'mute-all' }, '*');
-    };
+    // Removed muteAllParticipants - keeping collaborative environment
 
     useEffect(() => {
         setIsClient(true);
 
-        // Initialize Daily.co
+        // Helper: Promise with timeout
+        const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number, errorMsg: string): Promise<T> => {
+            return Promise.race([
+                promise,
+                new Promise<T>((_, reject) => 
+                    setTimeout(() => reject(new Error(errorMsg)), timeoutMs)
+                )
+            ]);
+        };
+
+        // Initialize Daily.co with optimized loading
         const initMeeting = async () => {
             try {
-                const supabase = createClient();
-                const profileData = await getCurrentProfile();
+                // Parallel: Load profile while fetching room data
+                const [profileData, roomResponse] = await Promise.all([
+                    getCurrentProfile(),
+                    withTimeout(
+                        fetch(`/api/daily/room?name=${encodeURIComponent(meetingId)}`),
+                        20000,
+                        'Room fetch timeout - please check your connection'
+                    )
+                ]);
+                
                 setProfile(profileData);
 
-                console.log('Querying room_name:', meetingId);
-                // Fetch real room URL via API (bypassing RLS for guests)
-                const res = await fetch(`/api/daily/room?name=${encodeURIComponent(meetingId)}`);
-                const meetingData = await res.json();
+                const meetingData = await roomResponse.json();
 
-                if (!res.ok || !meetingData || !meetingData.room_url) {
+                if (!roomResponse.ok || !meetingData || !meetingData.room_url) {
                     console.error('Room not found or invalid response for ID:', meetingId);
-                    console.error('API response:', meetingData);
                     setRoomNotFound(true);
                     return;
                 }
-                console.log('Meeting found:', meetingData);
 
                 const manager = getDailyManager();
                 const displayName = searchParams.get('name') || profileData?.full_name || "Guest";
 
-                const call = await manager.join(meetingData.room_url, {
-                    userName: displayName,
-                    audioSource: micOn,
-                    videoSource: videoOn
-                });
+                // Join call with timeout (20 seconds max)
+                const call = await withTimeout(
+                    manager.join(meetingData.room_url, {
+                        userName: displayName,
+                        audioSource: micOn,
+                        videoSource: videoOn
+                    }),
+                    20000,
+                    'Connection timeout - unable to join meeting'
+                );
 
                 if (call) {
                     await call.setUserData({
@@ -204,20 +238,16 @@ export default function ClassroomPage() {
                 call.on('participant-updated', handleParticipants);
                 call.on('participant-left', handleParticipants);
                 call.on('app-message', (ev: any) => {
-                    console.log('App message received:', ev);
                     const eventData = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data;
 
                     if (eventData?.type === 'chat') {
                         setChatMessages(prev => [...prev, eventData.data]);
-                    } else if (eventData?.type === 'mute-all') {
-                        // If not the host, mute local audio
-                        if (!isHost) {
-                            setMicOn(false);
-                            call.setLocalAudio(false);
-                        }
                     }
                 });
-                call.on('error', (e: any) => console.error('Daily error:', e));
+                call.on('error', (e: any) => {
+                    console.error('Daily error:', e);
+                    setConnectionError(e.errorMsg || 'Connection error occurred');
+                });
 
                 // Initial state
                 handleParticipants();
@@ -228,8 +258,9 @@ export default function ClassroomPage() {
                     call.off('participant-left', handleParticipants);
                     manager.leave();
                 };
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Meeting init failed:', err);
+                setConnectionError(err.message || 'Failed to connect to meeting');
             }
         };
 
@@ -253,18 +284,33 @@ export default function ClassroomPage() {
 
     if (!isClient) return null;
 
-    if (roomNotFound) {
+    if (roomNotFound || connectionError) {
         return (
             <div className="h-screen bg-[#202124] flex items-center justify-center p-4">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold mb-4 text-white uppercase italic tracking-tighter">Meeting not found</h1>
-                    <p className="text-[#9aa0a6] mb-8">This meeting link is invalid or has expired.</p>
-                    <button
-                        onClick={() => router.push('/academics/e-learning/onboarding')}
-                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold uppercase italic tracking-wider transition-colors"
-                    >
-                        Go back to home
-                    </button>
+                <div className="text-center max-w-md">
+                    <h1 className="text-4xl font-bold mb-4 text-white uppercase italic tracking-tighter">
+                        {roomNotFound ? 'Meeting not found' : 'Connection failed'}
+                    </h1>
+                    <p className="text-[#9aa0a6] mb-8">
+                        {roomNotFound 
+                            ? 'This meeting link is invalid or has expired.'
+                            : connectionError || 'Unable to connect to the meeting. Please check your internet connection and try again.'
+                        }
+                    </p>
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-8 py-3 bg-white hover:bg-gray-100 text-gray-900 rounded-xl font-bold uppercase italic tracking-wider transition-colors"
+                        >
+                            Retry
+                        </button>
+                        <button
+                            onClick={() => router.push('/academics/e-learning/onboarding')}
+                            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold uppercase italic tracking-wider transition-colors"
+                        >
+                            Go back
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -294,7 +340,7 @@ export default function ClassroomPage() {
                                 key={p.session_id}
                                 className="bg-[#3c4043] rounded-xl overflow-hidden relative group aspect-video shadow-lg"
                             >
-                                <DailyVideo participant={p} />
+                                <DailyVideo participant={p} videoStyle={videoFilterStyle} />
 
                                 {/* Name Overlay */}
                                 <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-lg border border-white/5">
@@ -345,6 +391,10 @@ export default function ClassroomPage() {
                             <ActionButton
                                 icon={<Hand size={20} className={(participants[callObject?.participants().local.session_id]?.userData as any)?.handRaised ? "text-yellow-400 fill-yellow-400" : ""} />}
                                 onClick={toggleHand}
+                            />
+                            <ActionButton 
+                                icon={<UserCircle size={20} />} 
+                                onClick={() => setShowSettings(true)} 
                             />
                             <ActionButton icon={<Smile size={20} />} onClick={() => { }} />
                             <ActionButton icon={<MoreVertical size={20} />} />
@@ -403,18 +453,7 @@ export default function ClassroomPage() {
                             </button>
                         </div>
 
-                        {/* Host Controls Section */}
-                        {activeTab === 'participants' && isHost && (
-                            <div className="px-4 py-3 bg-blue-50 border-b flex items-center justify-between">
-                                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Host Controls</span>
-                                <button
-                                    onClick={muteAllParticipants}
-                                    className="text-xs bg-white border border-blue-200 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors shadow-sm"
-                                >
-                                    Mute Everyone
-                                </button>
-                            </div>
-                        )}
+                        {/* Host Controls removed - maintaining collaborative environment */}
 
                         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-white">
                             {activeTab === 'chat' ? (

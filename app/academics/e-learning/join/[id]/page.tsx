@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { getCurrentProfile } from "@/utils/auth/schoolAuth";
 import { createClient } from "@/utils/supabase/client";
+import ProfileSetupForm from "@/app/components/e-learning/ProfileSetupForm";
+import { UserProfile, getProfile} from "@/app/utils/e-learning/userPreferences";
 
 export default function JoinMeetingPage() {
     const router = useRouter();
@@ -17,25 +19,36 @@ export default function JoinMeetingPage() {
     const meetingId = params.id as string;
 
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [step, setStep] = useState<'camera-choice' | 'lobby'>('camera-choice');
+    const [step, setStep] = useState<'profile' | 'camera-choice' | 'lobby'>('profile');
     const [cameraEnabled, setCameraEnabled] = useState(false);
     const [micEnabled, setMicEnabled] = useState(true);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [isJoining, setIsJoining] = useState(false);
-    const [userName, setUserName] = useState("You"); // Will be fetched from profile
+    const [userName, setUserName] = useState("You");
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-    // Load profile
+    // Load profile on mount - all users go through same flow
     useEffect(() => {
         const loadProfile = async () => {
-            const profile = await getCurrentProfile();
-            if (profile) {
-                setUserName(profile.full_name);
-            } else {
-                setUserName("Guest " + Math.floor(Math.random() * 1000));
+            const savedProfile = getProfile();
+            
+            if (savedProfile.username) {
+                // User has saved profile from previous session
+                setUserName(savedProfile.username);
+                setUserProfile(savedProfile);
+                setStep('camera-choice'); // Skip profile setup
             }
+            // Otherwise stay on profile setup step
         };
         loadProfile();
     }, []);
+
+    // Handle profile setup completion
+    const handleProfileComplete = (profile: UserProfile) => {
+        setUserProfile(profile);
+        setUserName(profile.username);
+        setStep('camera-choice');
+    };
 
     // Request camera access
     const enableCamera = async () => {
@@ -118,11 +131,12 @@ export default function JoinMeetingPage() {
     // Join the meeting
     const joinMeeting = () => {
         setIsJoining(true);
-        // Pass camera/mic state and name to the meeting page
+        // Pass camera/mic state, name, and avatar to the meeting page
         const queryParams = new URLSearchParams({
             camera: cameraEnabled.toString(),
             mic: micEnabled.toString(),
-            name: userName
+            name: userName,
+            ...(userProfile?.avatarUrl && { avatar: userProfile.avatarUrl })
         });
         router.push(`/academics/e-learning/class/${meetingId}?${queryParams.toString()}`);
     };
@@ -130,7 +144,13 @@ export default function JoinMeetingPage() {
     return (
         <div className="min-h-screen bg-[#202124] flex items-center justify-center p-4">
             <AnimatePresence mode="wait">
-                {step === 'camera-choice' ? (
+                {step === 'profile' ? (
+                    <ProfileSetupForm
+                        key="profile-setup"
+                        onComplete={handleProfileComplete}
+                        initialProfile={userProfile}
+                    />
+                ) : step === 'camera-choice' ? (
                     <CameraChoiceScreen
                         key="camera-choice"
                         onUseCamera={enableCamera}

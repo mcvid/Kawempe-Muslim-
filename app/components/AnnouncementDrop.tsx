@@ -8,9 +8,15 @@ import './AnnouncementDrop.css';
 const AnnouncementDrop = () => {
     const context = useSiteConfig();
     const announcement = context?.announcement;
+    const isGlobalLoading = context?.isGlobalLoading;
+    const hasSeenLoaderSession = context?.hasSeenLoaderSession;
     const [isVisible, setIsVisible] = useState(false);
     const [isDismissed, setIsDismissed] = useState(false);
     const [showAnimation, setShowAnimation] = useState(false);
+    const [forceExit, setForceExit] = useState(false);
+
+    // Persistence: Check if this Specific announcement has been dismissed in THIS session
+    const storageKey = announcement ? `dismissedAnn_${announcement.id}` : null;
 
     useEffect(() => {
         if (!announcement || !announcement.enabled) {
@@ -21,27 +27,46 @@ const AnnouncementDrop = () => {
         const now = new Date();
         const start = new Date(announcement.startAt);
         const end = new Date(announcement.endAt);
-
-        // Rule: Enabled and within time range
         const withinTime = now >= start && now <= end;
 
         if (withinTime) {
-            setIsVisible(true);
-            setShowAnimation(true);
+            const alreadyDismissed = storageKey ? sessionStorage.getItem(storageKey) === 'true' : false;
+
+            if (alreadyDismissed) {
+                // CASE: Already seen/dismissed in this session
+                // We show it ONLY while global loading is true (for consistency), then exit
+                if (isGlobalLoading) {
+                    setIsVisible(true);
+                    setShowAnimation(true);
+                    setForceExit(false);
+                } else {
+                    setForceExit(true);
+                    const timer = setTimeout(() => setIsVisible(false), 1000);
+                    return () => clearTimeout(timer);
+                }
+            } else {
+                // CASE: Fresh session or not yet dismissed
+                setIsVisible(true);
+                // Only animate (drop) if it's the first time seeing the loader in this session
+                setShowAnimation(!hasSeenLoaderSession);
+                setForceExit(false);
+            }
         } else {
             setIsVisible(false);
         }
-    }, [announcement]);
+    }, [announcement, isGlobalLoading, storageKey, hasSeenLoaderSession]);
 
     const handleDismiss = () => {
         if (announcement.dismissible) {
             setIsDismissed(true);
-            // Hide for this view only, resets on refresh
-            setTimeout(() => setIsVisible(false), 500);
+            if (storageKey) sessionStorage.setItem(storageKey, 'true');
+            setTimeout(() => setIsVisible(false), 800);
         }
     };
 
     if (!isVisible) return null;
+
+    const liftClass = isDismissed || forceExit ? 'exit-lift' : '';
 
     const getIcon = () => {
         switch (announcement.type) {
@@ -52,14 +77,30 @@ const AnnouncementDrop = () => {
         }
     };
 
+    // Premium Islamic SVGs
+    const Lantern = () => (
+        <svg width="40" height="60" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 10V25M30 40H70L85 80L50 130L15 80L30 40Z" stroke="#D4AF37" strokeWidth="4" fill="rgba(212, 175, 55, 0.1)"/>
+            <path d="M40 50H60M35 70H65M42 90H58" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="50" cy="75" r="15" fill="#FFD700" className="lantern-glow"/>
+            <path d="M50 5L45 15H55L50 5Z" fill="#D4AF37"/>
+        </svg>
+    );
+
+    const Crescent = () => (
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M70 15C50 15 30 35 30 60C30 85 50 105 70 105C55 105 40 90 40 60C40 30 55 15 70 15Z" fill="#D4AF37"/>
+        </svg>
+    );
+
     return (
-        <div className={`announcement-rope-container ${showAnimation ? 'animate-drop' : 'static-show'} ${isDismissed ? 'exit-lift' : ''}`}>
-            {/* The Rope */}
+        <div className={`announcement-rope-container ${showAnimation ? 'animate-drop' : 'static-show'} ${liftClass} islamic-theme`}>
+            {/* The Golden Chain (Beaded Rope) */}
             <div className="rope-svg-container">
-                <svg width="2" height="120" viewBox="0 0 2 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="1" y1="0" x2="1" y2="120" stroke="#8B5E3C" strokeWidth="2" strokeDasharray="4 4" />
-                </svg>
-                <div className="rope-knot"></div>
+                <div className="golden-chain"></div>
+                <div className="hanging-ornament">
+                    {announcement.type === 'celebration' ? <Lantern /> : <Crescent />}
+                </div>
             </div>
 
             {/* The Card */}
@@ -79,6 +120,9 @@ const AnnouncementDrop = () => {
                     )}
                 </div>
             </div>
+            {/* Hanging stars around */}
+            <div className="floating-star s-1">★</div>
+            <div className="floating-star s-2">★</div>
         </div>
     );
 };

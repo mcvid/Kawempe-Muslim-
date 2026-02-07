@@ -1,0 +1,80 @@
+.breadcrumbs-container {
+  width: 100%;
+  background: transparent;
+  padding: 0.5rem 0;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.breadcrumbs-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.breadcrumbs-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-link {
+  color: inherit;
+  opacity: 0.8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.breadcrumb-link:hover {
+  opacity: 1;
+}
+
+.home-link {
+  opacity: 0.7;
+}
+
+.breadcrumb-separator {
+  color: inherit;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-current {
+  color: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@media (max-width: 768px) {
+  .breadcrumbs-container {
+    padding: 0.5rem 1rem;
+    margin-top: 70px;
+  }
+}

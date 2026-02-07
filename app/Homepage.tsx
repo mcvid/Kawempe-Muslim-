@@ -19,11 +19,26 @@ import {
 import Footer from "./components/Footer";
 import MotionLoader from "./components/MotionLoader";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSiteConfig } from "./lib/SiteConfigContext";
+
 
 const SectionLoader = () => <MotionLoader minimal />;
 
 const Homepage = () => {
-  const [showLoader, setShowLoader] = useState(true);
+  const context = useSiteConfig();
+  const setIsGlobalLoading = context?.setIsGlobalLoading;
+  const hasSeenLoaderSession = context?.hasSeenLoaderSession;
+  const markLoaderSeen = context?.markLoaderSeen;
+  
+  // Default to true only if not seen in session
+  const [showLoader, setShowLoader] = useState(!hasSeenLoaderSession);
+
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+    if (setIsGlobalLoading) setIsGlobalLoading(false);
+    if (markLoaderSeen) markLoaderSeen();
+  };
+
 
   return (
     <>
@@ -35,7 +50,7 @@ const Homepage = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <MotionLoader onComplete={() => setShowLoader(false)} minDuration={4000} />
+            <MotionLoader onComplete={handleLoaderComplete} minDuration={4000} />
 
           </motion.div>
         )}

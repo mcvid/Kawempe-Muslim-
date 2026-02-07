@@ -113,45 +113,34 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: 'Room name is required' }, { status: 400 });
     }
 
-    console.log('[DEBUG] GET /api/daily/room - roomName:', roomName);
     try {
         const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-        console.log('[DEBUG] Supabase URL:', supabaseUrl);
-        console.log('[DEBUG] Service Role Key Present:', !!serviceRoleKey);
-
         if (!supabaseUrl) {
-            console.error('[DEBUG] NEXT_PUBLIC_SUPABASE_URL is missing');
             return NextResponse.json({ error: 'Supabase URL is missing' }, { status: 500 });
         }
 
-        console.log('[DEBUG] Initializing Supabase client...');
         const supabase = serviceRoleKey
             ? createAdminClient(supabaseUrl, serviceRoleKey)
             : await createServerClient();
-        console.log('[DEBUG] Supabase client initialized');
 
-        console.log('[DEBUG] Querying database for room:', roomName);
         const { data: meetingData, error } = await supabase
             .from('meeting_sessions')
             .select('*')
             .eq('room_name', roomName)
             .single();
 
-        console.log('[DEBUG] Query completed. Error:', error);
-
         if (error || !meetingData) {
-            console.log('[DEBUG] Meeting not found in DB');
             return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
         }
 
-        console.log('[DEBUG] Meeting data found:', meetingData.room_name);
         return NextResponse.json(meetingData);
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('[DEBUG] Error in GET handler:', error);
         return NextResponse.json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
     }
 }
+
+
 

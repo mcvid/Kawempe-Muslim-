@@ -22,6 +22,21 @@ export const SiteConfigProvider = ({ children }: { children: React.ReactNode }) 
 
     const [announcement, setAnnouncement] = useState(defaultAnnouncement);
     const [loading, setLoading] = useState(true);
+    const [isGlobalLoading, setIsGlobalLoading] = useState(true);
+    const [hasSeenLoaderSession, setHasSeenLoaderSession] = useState(false);
+
+    // Initial check for session storage
+    useEffect(() => {
+        const seen = sessionStorage.getItem('hasSeenGlobalLoader') === 'true';
+        setHasSeenLoaderSession(seen);
+        if (seen) setIsGlobalLoading(false);
+    }, []);
+
+    const markLoaderSeen = () => {
+        sessionStorage.setItem('hasSeenGlobalLoader', 'true');
+        setHasSeenLoaderSession(true);
+    };
+
 
     // Fetch Config from Supabase
     useEffect(() => {
@@ -68,6 +83,10 @@ export const SiteConfigProvider = ({ children }: { children: React.ReactNode }) 
             announcement,
             updateAnnouncement,
             loading,
+            isGlobalLoading,
+            setIsGlobalLoading,
+            hasSeenLoaderSession,
+            markLoaderSeen,
             refreshConfig: fetchConfig
         }}>
             {children}

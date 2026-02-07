@@ -24,6 +24,7 @@ import Image from "next/image";
 import Fuse from "fuse.js";
 import { supabase } from "../lib/supabase";
 import { searchData } from "../data/searchData";
+import Breadcrumbs from "./Breadcrumbs";
 
 // Search data for global search
 // searchData is now imported from @/app/data/searchData
@@ -76,6 +77,7 @@ const navLinksRight = [
     sublinks: [
       { title: "Admissions Overview", href: "/admissions" },
       { title: "Online Application", href: "/admissions/apply" },
+      { title: "Schedule a Visit", href: "/admissions/visit" },
       { title: "School Fees", href: "/fees" },
       { title: "Scholarships", href: "/admissions/scholarships" },
       { title: "FAQs", href: "/admissions/faqs" },
@@ -329,6 +331,9 @@ export default function NavBar() {
   const isVirtualTour = pathname === "/about/virtual-tour";
   const isHistory = pathname === "/about/history";
   const isStrategicPlan = pathname === "/about/strategic-plan";
+  const isVisit = pathname === "/admissions/visit";
+  const isVisitSuccess = pathname === "/admissions/visit/success";
+  
   // Text color logic: White on pages with dark hero backgrounds (Home, Academics, Success, About) when not scrolled. Otherwise dark.
   const hasDarkHero =
     isHome ||
@@ -339,7 +344,9 @@ export default function NavBar() {
     isStrategicPlan ||
     isHeadteacherMsg ||
     isHierarchy ||
-    isLeadership;
+    isLeadership ||
+    isVisit ||
+    isVisitSuccess;
   // Text color logic
   let textColorClass =
     "text-slate-700 hover:border-slate-700 hover:bg-slate-50";
@@ -650,6 +657,11 @@ export default function NavBar() {
               </Link>
             </li>
           </ul>
+        </div>
+
+        {/* Dynamic Breadcrumbs */}
+        <div className="max-w-[1400px] mx-auto px-6">
+          <Breadcrumbs colorClass={textColorClass} />
         </div>
       </nav>
 

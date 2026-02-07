@@ -1,139 +1,106 @@
 .announcement-rope-container {
     position: fixed;
-    /* Changed from absolute to fixed to drop from viewport top */
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
-    top: 0;
-    /* Changed from calc(var(--header-height) - 10px) to ensure it drops from very top or adjust accordingly */
-    z-index: 1000;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: center;
     pointer-events: none;
 }
 
-/* Rope Styling */
-.rope-svg-container {
-    margin-top: -120px;
-    /* Start hidden above */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: margin-top 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Islamic Theme Styling */
+
+.islamic-theme {
+    --gold: #D4AF37;
+    --gold-bright: #FFD700;
+    --deep-green: #064E3B;
 }
 
-.rope-knot {
-    width: 10px;
-    height: 10px;
-    background: #8B5E3C;
+/* Golden Chain (Beaded Line) */
+.golden-chain {
+    width: 2px;
+    height: 100px;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--gold-bright),
+        var(--gold-bright) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    position: relative;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.4);
+}
+
+.golden-chain::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
     border-radius: 50%;
-    margin-top: -5px;
 }
 
-/* Card Styling */
+.hanging-ornament {
+    margin-top: 5px;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+.lantern-glow {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Card Styling Refinement */
 .announcement-card {
     background: white;
     min-width: 320px;
     max-width: 450px;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     pointer-events: auto;
     overflow: hidden;
-    border-top: 4px solid var(--primary-green);
+    border: 2px solid rgba(212, 175, 55, 0.1);
+    border-top: 5px solid var(--gold);
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.a-card-content {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    gap: 1.25rem;
-    position: relative;
-}
-
-.a-icon-wrap {
-    width: 45px;
-    height: 45px;
-    background: #f0fdf4;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.a-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--primary-green);
-}
-
-.a-text-box h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.2;
-}
-
-.a-text-box p {
-    margin: 4px 0 0;
-    font-size: 0.85rem;
-    color: #666;
-    line-height: 1.4;
-}
-
-.a-close-btn {
+/* Floating Stars */
+.floating-star {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: transparent;
-    border: none;
-    color: #999;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 50%;
-    display: flex;
-    transition: all 0.2s;
+    color: var(--gold-bright);
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
 }
 
-.a-close-btn:hover {
-    background: #f1f5f9;
-    color: #e11d48;
+.animate-drop .floating-star {
+    animation: fadeInStar 1s forwards 1s;
 }
 
-/* Types Styling */
-.announcement-card.type-celebration {
-    border-top-color: #fbbf24;
+.floating-star.s-1 { top: 40px; left: -30px; }
+.floating-star.s-2 { top: 70px; right: -30px; }
+
+@keyframes fadeInStar {
+    from { opacity: 0; transform: scale(0); }
+    to { opacity: 0.8; transform: scale(1); }
 }
 
-.announcement-card.type-celebration .a-icon-wrap {
-    background: #fffbeb;
+/* Redefine Animation Classes for Islamic Theme */
+.animate-drop .rope-svg-container {
+    animation: dropOrnaments 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.announcement-card.type-celebration .a-icon {
-    color: #fbbf24;
-}
-
-.announcement-card.type-matchday {
-    border-top-color: var(--primary-green);
-}
-
-.announcement-card.type-alert {
-    border-top-color: #ef4444;
-}
-
-.announcement-card.type-alert .a-icon-wrap {
-    background: #fef2f2;
-}
-
-.announcement-card.type-alert .a-icon {
-    color: #ef4444;
-}
-
-/* Animation Classes */
 .static-show .rope-svg-container {
     margin-top: 0;
 }
@@ -143,12 +110,11 @@
     transform: translateY(0);
 }
 
-.animate-drop .rope-svg-container {
-    animation: dropRope 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.animate-drop .announcement-card {
-    animation: dropCard 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+@keyframes dropOrnaments {
+    0% { margin-top: -150px; }
+    70% { margin-top: 15px; }
+    85% { margin-top: -5px; }
+    100% { margin-top: 0; }
 }
 
 .exit-lift {
@@ -156,15 +122,16 @@
 }
 
 .exit-lift .rope-svg-container {
-    margin-top: -200px;
-    transition: margin-top 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    margin-top: -250px;
+    transition: margin-top 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
 .exit-lift .announcement-card {
     opacity: 0;
-    transform: translateY(-50px);
-    transition: all 0.6s ease;
+    transform: translateY(-80px);
+    transition: all 1s ease;
 }
+
 
 @keyframes dropRope {
     0% {
@@ -194,6 +161,75 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.rope-svg-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -150px; /* Base hidden state */
+}
+
+.a-card-content {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+    position: relative;
+}
+
+.a-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16a34a;
+    flex-shrink: 0;
+}
+
+.type-celebration .a-icon-wrap { background: #fef3c7; color: #d97706; }
+.type-matchday .a-icon-wrap { background: #eff6ff; color: #2563eb; }
+.type-alert .a-icon-wrap { background: #fef2f2; color: #dc2626; }
+
+.a-text-box {
+    flex: 1;
+}
+
+.a-text-box h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.a-text-box p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.a-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.a-close-btn:hover {
+    background: #f1f5f9;
+    color: #475569;
 }
 
 /* Responsive */

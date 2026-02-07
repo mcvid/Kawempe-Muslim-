@@ -10,6 +10,8 @@ import VisitTracker from "./components/VisitTracker";
 import { CartProvider } from "./lib/CartContext";
 import { SiteConfigProvider } from "./lib/SiteConfigContext";
 import AnnouncementDrop from "./components/AnnouncementDrop";
+import Breadcrumbs from "./components/Breadcrumbs";
+
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -72,6 +74,7 @@ export default function RootLayout({
                 <CartProvider>
                   <AnnouncementDrop />
                   <FadeInSection delay={0}>
+
                     {children}
                   </FadeInSection>
                 </CartProvider>
