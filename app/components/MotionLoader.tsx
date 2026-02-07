@@ -33,7 +33,7 @@ export default function MotionLoader({ minimal = false, onComplete, minDuration 
                 delayChildren: 0.2,
             },
         },
-    };
+    } as const;
 
     const letterVariants = {
         hidden: { opacity: 0, scale: 0.5, y: 10 },
@@ -47,7 +47,7 @@ export default function MotionLoader({ minimal = false, onComplete, minDuration 
                 stiffness: 200,
             },
         },
-    };
+    } as const;
 
     const lineVariants = {
         hidden: { width: 0, opacity: 0 },
@@ -58,10 +58,10 @@ export default function MotionLoader({ minimal = false, onComplete, minDuration 
                 duration: 1.5,
                 ease: "easeInOut",
                 repeat: Infinity,
-                repeatType: "reverse" as const,
+                repeatType: "reverse",
             },
         },
-    };
+    } as const;
 
     if (minimal) {
         return (

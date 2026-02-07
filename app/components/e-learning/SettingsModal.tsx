@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Video, Volume2, Palette, Sliders } from "lucide-react";
-import { getProfile, saveProfile, UserProfile, getVideoSettings, saveVideoSettings, getAudioSettings, saveAudioSettings } from "@/app/utils/e-learning/userPreferences";
+import { getProfile, saveProfile, UserProfile, getVideoSettings, saveVideoSettings, getAudioSettings, saveAudioSettings, VideoSettings, AudioSettings } from "@/app/utils/e-learning/userPreferences";
 import ProfileSetupForm from "./ProfileSetupForm";
 
 interface SettingsModalProps {
@@ -19,13 +19,13 @@ export default function SettingsModal({ isOpen, onClose, onProfileUpdate }: Sett
     const [videoSettings, setVideoSettings] = useState(getVideoSettings());
     const [audioSettings, setAudioSettings] = useState(getAudioSettings());
 
-    const handleVideoChange = (key: string, value: number | boolean) => {
+    const handleVideoChange = <K extends keyof VideoSettings>(key: K, value: VideoSettings[K]) => {
         const updated = { ...videoSettings, [key]: value };
         setVideoSettings(updated);
         saveVideoSettings(updated);
     };
 
-    const handleAudioChange = (key: string, value: boolean) => {
+    const handleAudioChange = <K extends keyof AudioSettings>(key: K, value: AudioSettings[K]) => {
         const updated = { ...audioSettings, [key]: value };
         setAudioSettings(updated);
         saveAudioSettings(updated);
